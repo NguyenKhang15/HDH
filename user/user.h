@@ -1,3 +1,12 @@
+#define NULL ((void*)0)
+struct procinfo{
+    int pid;
+    int ppid;
+    int state;
+    uint64 sz;
+    char name[16];
+};
+
 struct stat;
 
 // system calls
@@ -22,6 +31,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int procinfo(int pid, struct procinfo *info);
 
 // ulib.c
 int stat(const char*, struct stat*);
