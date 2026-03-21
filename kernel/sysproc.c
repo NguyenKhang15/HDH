@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "syscall.h"
 
 uint64
 sys_exit(void)
@@ -90,4 +91,35 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+//sysproc
+uint64
+sys_procinfo(void){
+  int pid;
+  uint64 info_addr;
+  struct proc *p;
+  struct proc *curproc = myproc();
+  argint(0, &pid);
+  argaddr(1, &info_addr);
+  extern struct proc proc[];
+  for(p = proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock);
+    if(p->state != UNUSED && p->pid == pid){
+      struct procinfo kinfo;
+      kinfo.pid = p->pid;
+      if(p->parent) kinfo.ppid = p->parent->pid;
+      else kinfo.ppid = 0;
+      kinfo.state = p->state;
+      kinfo.sz = p->sz;
+      safestrcpy(kinfo.name, p->name, sizeof(kinfo.name));
+      release(&p->lock);
+      if(copyout(curproc->pagetable, info_addr, (char*)&kinfo, sizeof(kinfo)) < 0){
+        return -1;
+      }
+      return 0;
+    }
+    release(&p->lock);
+  }
+  return -1;
 }
