@@ -32,6 +32,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int procinfo(int pid, struct procinfo *info);
+int trace(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

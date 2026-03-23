@@ -103,3 +103,11 @@ int main(int argc, char *argv[])
     }
     exit(0);
 }
+#include "user/user.h"
+
+int main(int argc, char *argv[]) {
+    if (argc >= 1) {
+        printf("xargs dang chay!\n");
+    }
+    exit(0);
+}
